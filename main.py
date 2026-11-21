@@ -65,12 +65,18 @@ def main():
         print("entry.txt missing or outside 1..280 code points", file=sys.stderr)
         return 1
     target = output_path()
+    payload = poem.encode("utf-8")
     try:
         os.makedirs(os.path.dirname(target), exist_ok=True)
         with open(target, "wb") as handle:
-            handle.write(poem.encode("utf-8"))
+            handle.write(payload)
+        with open(target, "rb") as handle:
+            written = handle.read()
     except OSError as exc:
         print("could not write %s: %s" % (target, exc), file=sys.stderr)
+        return 1
+    if written != payload:
+        print("written entry.txt does not match the shipped poem", file=sys.stderr)
         return 1
     return 0
 
